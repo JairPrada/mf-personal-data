@@ -13,7 +13,7 @@ export default defineConfig({
       fileName: 'remoteEntry',
     },
     rollupOptions: {
-      external: ['vue'],
+      // external: ['vue'],
     },
   },
   server: { port: 3003 },

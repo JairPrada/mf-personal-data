@@ -8,13 +8,13 @@
         </div>
       </div>
       <nav class="pd-nav">
-        <span>Cr\u00e9dito </span>
+        <span>Crédito </span>
         <span class="pd-nav-highlight">Hipotecario</span>
       </nav>
     </header>
     <main class="pd-main">
-      <h2 class="pd-title">Ingrese sus datos personales</h2>
-      <form class="pd-form" @submit.prevent="handleSubmit" novalidate>
+      <h2 class="pd-title">Ingrese sus datos personales</h2>        <div style="position:relative">
+        <div v-if="loading" class="pd-overlay"><div class="pd-overlay-spinner" /></div>      <form class="pd-form" @submit.prevent="handleSubmit" novalidate>
         <div class="pd-row">
           <div class="pd-field">
             <input v-model="form.nombres" class="pd-input" :class="{ 'pd-input--error': errors.nombres }" type="text" placeholder="Nombres" />
@@ -37,7 +37,7 @@
         <div class="pd-row">
           <div class="pd-field pd-select-wrap">
             <select v-model="form.genero" class="pd-select" :class="{ 'pd-input--error': errors.genero }">
-              <option value="" disabled>G\u00e9nero</option>
+              <option value="" disabled>Género</option>
               <option value="M">Masculino</option>
               <option value="F">Femenino</option>
               <option value="O">Otro</option>
@@ -51,24 +51,24 @@
               <option value="C">Casado/a</option>
               <option value="D">Divorciado/a</option>
               <option value="V">Viudo/a</option>
-              <option value="UL">Uni\u00f3n libre</option>
+              <option value="UL">Unión libre</option>
             </select>
             <span v-if="errors.estadoCivil" class="pd-error">{{ errors.estadoCivil }}</span>
           </div>
         </div>
         <div class="pd-row">
           <div class="pd-field">
-            <input v-model="form.correo" class="pd-input" :class="{ 'pd-input--error': errors.correo }" type="email" placeholder="Correo electr\u00f3nico" />
+            <input v-model="form.correo" class="pd-input" :class="{ 'pd-input--error': errors.correo }" type="email" placeholder="Correo electrónico" />
             <span v-if="errors.correo" class="pd-error">{{ errors.correo }}</span>
           </div>
           <div class="pd-field">
-            <input v-model="form.telefono" class="pd-input" :class="{ 'pd-input--error': errors.telefono }" type="tel" placeholder="Tel\u00e9fono celular" maxlength="10" />
+            <input v-model="form.telefono" class="pd-input" :class="{ 'pd-input--error': errors.telefono }" type="tel" placeholder="Teléfono celular" maxlength="10" />
             <span v-if="errors.telefono" class="pd-error">{{ errors.telefono }}</span>
           </div>
         </div>
         <div class="pd-row">
           <div class="pd-field">
-            <input v-model="form.direccion" class="pd-input" :class="{ 'pd-input--error': errors.direccion }" type="text" placeholder="Direcci\u00f3n de residencia" />
+            <input v-model="form.direccion" class="pd-input" :class="{ 'pd-input--error': errors.direccion }" type="text" placeholder="Dirección de residencia" />
             <span v-if="errors.direccion" class="pd-error">{{ errors.direccion }}</span>
           </div>
           <div class="pd-field">
@@ -76,14 +76,18 @@
             <span v-if="errors.ciudad" class="pd-error">{{ errors.ciudad }}</span>
           </div>
         </div>
-        <button type="submit" class="pd-btn" :class="{ 'pd-btn--active': isValid }" :disabled="!isValid">Continuar</button>
+        <button type="submit" class="pd-btn" :class="{ 'pd-btn--active': isValid && !loading }" :disabled="!isValid || loading">
+          <span v-if="loading" class="pd-spinner" />
+          {{ loading ? 'Enviando...' : 'Continuar' }}
+        </button>
       </form>
+      </div>
     </main>
   </div>
 </template>
 
 <script setup lang="ts">
-import { reactive, computed } from "vue";
+import { reactive, computed, ref } from "vue";
 
 const props = withDefaults(
   defineProps<{
@@ -114,19 +118,33 @@ const required: (keyof FormState)[] = [
 function validate(): boolean {
   (Object.keys(errors) as (keyof FormState)[]).forEach((k) => delete errors[k]);
   required.forEach((field) => { if (!form[field]) errors[field] = "Campo requerido"; });
-  if (form.correo && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.correo)) errors.correo = "Correo inv\u00e1lido";
-  if (form.telefono && !/^\d{10}$/.test(form.telefono)) errors.telefono = "Debe tener 10 d\u00edgitos";
+  if (form.correo && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.correo)) errors.correo = "Correo inválido";
+  if (form.telefono && !/^\d{10}$/.test(form.telefono.replace(/\D/g, ''))) errors.telefono = "Debe tener 10 dígitos";
   return Object.keys(errors).length === 0;
 }
 
 const isValid = computed(() =>
   required.every((f) => !!form[f]) &&
   /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.correo) &&
-  /^\d{10}$/.test(form.telefono)
+  /^\d{10}$/.test(form.telefono.replace(/\D/g, ''))
 );
 
-function handleSubmit() {
-  if (validate()) props.emit?.("mf:personal-data:submit", { ...form });
+const loading = ref(false);
+
+async function handleSubmit() {
+  if (!validate() || loading.value) return;
+  loading.value = true;
+  try {
+    const res = await fetch("https://jsonplaceholder.typicode.com/users", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(form),
+    });
+    const data = await res.json();
+    props.emit?.("mf:personal-data:submit", { ...form, id: data.id });
+  } finally {
+    loading.value = false;
+  }
 }
 </script>
 
@@ -155,5 +173,9 @@ function handleSubmit() {
 .pd-btn { margin-top: 8px; width: 100%; padding: 15px; border: none; border-radius: 6px; font-size: 16px; font-weight: 500; cursor: not-allowed; background: #d0d0d0; color: #888; transition: background 0.2s, color 0.2s; }
 .pd-btn--active { background: #0057a8; color: #fff; cursor: pointer; }
 .pd-btn--active:hover { background: #004494; }
+@keyframes pd-spin { to { transform: rotate(360deg); } }
+.pd-spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.35); border-top-color: #fff; border-radius: 50%; animation: pd-spin 0.65s linear infinite; vertical-align: middle; margin-right: 8px; }
+.pd-overlay { position: absolute; inset: 0; background: rgba(255,255,255,0.6); backdrop-filter: blur(2px); display: flex; align-items: center; justify-content: center; z-index: 10; border-radius: 8px; }
+.pd-overlay-spinner { width: 36px; height: 36px; border: 3px solid #e0e7ef; border-top-color: #0057a8; border-radius: 50%; animation: pd-spin 0.75s linear infinite; }
 @media (max-width: 600px) { .pd-row { grid-template-columns: 1fr; } }
 </style>
