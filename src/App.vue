@@ -1,7 +1,11 @@
 <script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue'
+import PersonalData from './PersonalData.vue';
+
+const mockEmit = (event: string, detail: Record<string, unknown>) => {
+  console.log('[mf-personal-data dev] Event:', event, detail);
+};
 </script>
 
 <template>
-  <HelloWorld />
+  <PersonalData :emit="mockEmit" />
 </template>
