@@ -1,8 +1,9 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
+import { manifestPlugin } from '@journals/mf-contract/vite-plugin'
 
 export default defineConfig({
-  plugins: [vue()],
+  plugins: [vue(), manifestPlugin()],
   define: {
     'process.env.NODE_ENV': JSON.stringify('production'),
   },

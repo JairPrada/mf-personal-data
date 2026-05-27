@@ -1,5 +1,6 @@
 import { createApp, type App as VueApp } from 'vue';
 import PersonalData from './PersonalData.vue';
+import { manifest } from './manifest';
 
 const cssUrl = new URL('./remoteEntry.css', import.meta.url).href;
 if (!document.querySelector(`link[href="${cssUrl}"]`)) {
@@ -12,6 +13,7 @@ if (!document.querySelector(`link[href="${cssUrl}"]`)) {
 const apps = new WeakMap<HTMLElement, VueApp>();
 
 export default {
+    manifest,
     mount(el: HTMLElement, props: Record<string, unknown> = {}): void {
         const app = createApp(PersonalData, props);
         apps.set(el, app);
