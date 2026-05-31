@@ -14,7 +14,7 @@ const apps = new WeakMap<HTMLElement, VueApp>();
 
 export default {
     manifest,
-    mount(el: HTMLElement, props: Record<string, unknown> = {}): void {
+    mount(el: HTMLElement, _component: string, props: Record<string, unknown> = {}): void {
         const app = createApp(PersonalData, props);
         apps.set(el, app);
         app.mount(el);

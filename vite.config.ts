@@ -1,6 +1,6 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
-import { manifestPlugin } from '@journals/mf-contract/vite-plugin'
+import { manifestPlugin } from '@journals/lib-manifest/vite-plugin'
 
 export default defineConfig({
   plugins: [vue(), manifestPlugin()],

@@ -1,4 +1,4 @@
-import { defineManifest } from "@journals/mf-contract";
+import { defineManifest } from "@journals/lib-manifest";
 
 export const manifest = defineManifest({
   name: "mf-personal-data",
@@ -9,19 +9,12 @@ export const manifest = defineManifest({
     {
       name: "PersonalData",
       description: "Formulario de datos personales",
-      props: [
-        {
-          name: "emit",
-          type: "function",
-          required: true,
-          description: "Event emitter del Shell",
-        },
-      ],
+      props: [],
     },
   ],
   events: [
     {
-      event: "mf:personal-data:submit",
+      event: "mf-personal-data:PersonalData:submit",
       description: "Usuario completo el formulario de datos personales",
       direction: "emits",
       payload: {
@@ -32,3 +25,5 @@ export const manifest = defineManifest({
     },
   ],
 });
+
+export type Manifest = typeof manifest;

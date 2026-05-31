@@ -3,22 +3,40 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "exports": {
+    "./events": {
+      "types": "./src/events.ts",
+      "default": "./src/events.ts"
+    },
+    "./manifest": {
+      "types": "./src/manifest.ts",
+      "default": "./src/manifest.ts"
+    }
+  },
   "scripts": {
     "dev": "concurrently \"vite build --watch\" \"vite preview --port 3003\"",
     "build": "vite build",
     "preview": "vite preview"
   },
   "dependencies": {
-    "@journals/mf-contract": "workspace:*",
-    "vue": "^3.5.34"
+    "@journals/lib-manifest": "file:./vendor/journals-lib-manifest-0.1.0.tgz",
+    "@journals/lib-service-bus": "file:./vendor/journals-lib-service-bus-0.1.0.tgz",
+    "vue": "^3.5.35",
+    "zod": "^3.25.76"
   },
   "devDependencies": {
-    "@types/node": "^24.12.3",
-    "@vitejs/plugin-vue": "^6.0.6",
+    "@types/node": "^24.12.4",
+    "@vitejs/plugin-vue": "^6.0.7",
     "@vue/tsconfig": "^0.9.1",
     "concurrently": "^9.2.1",
-    "typescript": "~6.0.2",
-    "vite": "^8.0.12",
-    "vue-tsc": "^3.2.8"
+    "typescript": "~6.0.3",
+    "vite": "^8.0.14",
+    "vue-tsc": "^3.3.2"
+  },
+  "pnpm": {
+    "overrides": {
+      "@journals/lib-manifest": "file:./vendor/journals-lib-manifest-0.1.0.tgz",
+      "@journals/lib-service-bus": "file:./vendor/journals-lib-service-bus-0.1.0.tgz"
+    }
   }
 }

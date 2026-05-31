@@ -88,13 +88,7 @@
 
 <script setup lang="ts">
 import { reactive, computed, ref } from "vue";
-
-const props = withDefaults(
-  defineProps<{
-    emit?: (event: string, detail: Record<string, unknown>) => void;
-  }>(),
-  { emit: undefined }
-);
+import { publish } from "./events";
 
 interface FormState {
   nombres: string; primerApellido: string; segundoApellido: string;
@@ -141,7 +135,7 @@ async function handleSubmit() {
       body: JSON.stringify(form),
     });
     const data = await res.json();
-    props.emit?.("mf:personal-data:submit", { ...form, id: data.id });
+    publish("mf-personal-data:PersonalData:submit", { nombres: form.nombres, correo: form.correo, telefono: form.telefono });
   } finally {
     loading.value = false;
   }
