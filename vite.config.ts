@@ -16,6 +16,7 @@ export default defineConfig({
     rollupOptions: {
       // external: ['vue'],
     },
+    minify: false,
   },
   server: { port: 3003 },
   preview: {
